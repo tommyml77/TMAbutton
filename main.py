@@ -26,6 +26,8 @@ html_template = '''
             color: white;
             margin: 0;
             padding: 0;
+            height: 100vh;
+            overflow: hidden;
         }
         .header {
             display: flex;
@@ -59,12 +61,12 @@ html_template = '''
             overflow-x: auto;
             padding: 10px;
             background-color: #2a2a2a;
+            justify-content: space-between;
         }
         .day {
-            flex: 0 0 auto;
-            width: 50px;
+            flex: 0 0 calc(100% / 7 - 10px);
             text-align: center;
-            margin-right: 10px;
+            margin-right: 5px;
             padding: 5px;
         }
         .day.selected {
@@ -73,12 +75,18 @@ html_template = '''
         }
         .events-container {
             padding: 10px;
+            height: calc(100% - 200px);
+            overflow-y: auto;
         }
         .event {
             background-color: #333;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
+        }
+        .event .event-date {
+            font-weight: bold;
+            margin-bottom: 5px;
         }
         .new-event-button {
             display: block;
@@ -124,7 +132,7 @@ html_template = '''
             const userData = getUserDataFromUrl();
             if (userData.username) {
                 // Здесь можно добавить логику для получения аватара, если он доступен
-                document.getElementById('userAvatar').style.backgroundImage = `url('https://via.placeholder.com/40')`;
+                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
                 document.getElementById('userAvatar').style.backgroundSize = 'cover';
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
@@ -166,10 +174,13 @@ html_template = '''
 
         function loadEvents() {
             const eventsContainer = document.getElementById('eventsContainer');
+            const today = new Date();
             for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() + i);
                 const eventElement = document.createElement('div');
                 eventElement.className = 'event';
-                eventElement.innerText = 'No events';
+                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
                 eventsContainer.appendChild(eventElement);
             }
         }
