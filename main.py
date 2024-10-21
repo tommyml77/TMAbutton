@@ -49,15 +49,16 @@ html_template = '''
         function getUserDataFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return {
-                user_id: params.get('user_id')
+                username: params.get('username')
             };
         }
 
         // Инициализация приложения и передача данных о пользователе на сервер
         function initApp() {
             const userData = getUserDataFromUrl();
-            if (userData.user_id) {
-                document.getElementById('userInfo').innerText = `User ID: ${userData.user_id}`;
+            if (userData.username) {
+                document.getElementById('userInfo').innerText = `Username: ${userData.username}
+Date: ${new Date().toLocaleDateString()}`;
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
                     method: 'POST',
@@ -93,11 +94,11 @@ def save_user_data():
         user_id = data.get('user_id')
         if user_id:
             user_data[user_id] = {
-                'user_id': user_id
+                'username': user_id
             }
             return {"status": "success"}, 200
         else:
-            return {"status": "error", "message": "User ID not provided"}, 400
+            return {"status": "error", "message": "Username not provided"}, 400
     except Exception as e:
         return {"status": "error", "message": str(e)}, 500
 
