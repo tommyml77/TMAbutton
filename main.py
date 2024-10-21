@@ -16,7 +16,7 @@ html_template = '''
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <title>Telegram Calendar App</title>
     <style>
@@ -41,6 +41,8 @@ html_template = '''
             border-radius: 50%;
             background-color: #888;
             margin-right: 10px;
+            background-size: cover;
+            background-position: center;
         }
         .month-year {
             flex-grow: 1;
@@ -58,15 +60,13 @@ html_template = '''
         }
         .week-days {
             display: flex;
-            overflow-x: auto;
             padding: 10px;
             background-color: #2a2a2a;
-            justify-content: space-between;
+            justify-content: space-around;
         }
         .day {
-            flex: 0 0 calc(100% / 7 - 10px);
+            flex: 1;
             text-align: center;
-            margin-right: 5px;
             padding: 5px;
         }
         .day.selected {
@@ -75,7 +75,7 @@ html_template = '''
         }
         .events-container {
             padding: 10px;
-            height: calc(100% - 200px);
+            height: calc(100% - 180px);
             overflow-y: auto;
         }
         .event {
@@ -87,6 +87,8 @@ html_template = '''
         .event .event-date {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #0088cc;
+            font-size: 18px;
         }
         .new-event-button {
             display: block;
@@ -131,9 +133,7 @@ html_template = '''
         function initApp() {
             const userData = getUserDataFromUrl();
             if (userData.username) {
-                // Здесь можно добавить логику для получения аватара, если он доступен
                 document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
-                document.getElementById('userAvatar').style.backgroundSize = 'cover';
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
                     method: 'POST',
@@ -180,7 +180,7 @@ html_template = '''
                 date.setDate(today.getDate() + i);
                 const eventElement = document.createElement('div');
                 eventElement.className = 'event';
-                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
+                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { month: 'short', weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
                 eventsContainer.appendChild(eventElement);
             }
         }
