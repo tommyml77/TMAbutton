@@ -68,10 +68,13 @@ html_template = '''
             flex: 1;
             text-align: center;
             padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
         }
         .day.selected {
             background-color: #0088cc;
             border-radius: 5px;
+            color: white;
         }
         .events-container {
             padding: 10px;
@@ -89,13 +92,14 @@ html_template = '''
         .event .event-date {
             font-weight: bold;
             color: #0088cc;
-            font-size: 14px;
+            font-size: 12px;
             margin-right: 15px;
             min-width: 50px;
             text-align: left;
         }
         .event .event-description {
             flex-grow: 1;
+            font-size: 14px;
         }
         .new-event-button {
             display: block;
