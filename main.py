@@ -48,8 +48,10 @@ html_template = '''
         // Получение информации о пользователе из URL
         function getUserDataFromUrl() {
             const params = new URLSearchParams(window.location.search);
+            const username = params.get('username');
+            console.log('Extracted username from URL:', username);
             return {
-                username: params.get('username')
+                username: username
             };
         }
 
@@ -66,7 +68,13 @@ Date: ${new Date().toLocaleDateString()}`;
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(userData)
+                }).then(response => response.json()).then(data => {
+                    console.log('Server response:', data);
+                }).catch(error => {
+                    console.error('Error sending user data:', error);
                 });
+            } else {
+                document.getElementById('userInfo').innerText = 'No username provided in URL.';
             }
         }
 
@@ -94,12 +102,15 @@ def save_user_data():
         username = data.get('username')
         if username:
             user_data[username] = {
-    'username': username
-}
+                'username': username
+            }
+            print(f"Received user data: {user_data[username]}")  # Отладочный вывод
             return {"status": "success"}, 200
         else:
+            print("Username not provided in the request.")  # Отладочный вывод
             return {"status": "error", "message": "Username not provided"}, 400
     except Exception as e:
+        print(f"Error processing user data: {e}")  # Отладочный вывод
         return {"status": "error", "message": str(e)}, 500
 
 if __name__ == '__main__':
