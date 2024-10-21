@@ -75,10 +75,12 @@ html_template = '''
         }
         .events-container {
             padding: 10px;
-            height: calc(100% - 180px);
+            height: calc(100% - 200px);
             overflow-y: auto;
         }
         .event {
+            display: flex;
+            align-items: center;
             background-color: #333;
             padding: 10px;
             margin-bottom: 10px;
@@ -86,9 +88,11 @@ html_template = '''
         }
         .event .event-date {
             font-weight: bold;
-            margin-bottom: 5px;
             color: #0088cc;
             font-size: 18px;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: right;
         }
         .new-event-button {
             display: block;
@@ -100,6 +104,8 @@ html_template = '''
             text-align: center;
             border-radius: 5px;
             cursor: pointer;
+            position: sticky;
+            bottom: 20px;
         }
     </style>
 </head>
@@ -134,6 +140,8 @@ html_template = '''
             const userData = getUserDataFromUrl();
             if (userData.username) {
                 document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
+                document.getElementById('userAvatar').style.backgroundSize = 'cover';
+                document.getElementById('userAvatar').style.backgroundPosition = 'center';
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
                     method: 'POST',
@@ -186,6 +194,7 @@ html_template = '''
         }
 
         Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
         initApp();
         loadWeekDays();
         loadEvents();
