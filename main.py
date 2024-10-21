@@ -75,7 +75,7 @@ html_template = '''
         }
         .events-container {
             padding: 10px;
-            height: calc(100% - 200px);
+            height: calc(100% - 240px);
             overflow-y: auto;
         }
         .event {
@@ -91,8 +91,11 @@ html_template = '''
             color: #0088cc;
             font-size: 14px;
             margin-right: 15px;
-            min-width: 60px;
-            text-align: right;
+            min-width: 50px;
+            text-align: left;
+        }
+        .event .event-description {
+            flex-grow: 1;
         }
         .new-event-button {
             display: block;
@@ -104,8 +107,10 @@ html_template = '''
             text-align: center;
             border-radius: 5px;
             cursor: pointer;
-            position: sticky;
+            position: fixed;
             bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
@@ -139,18 +144,9 @@ html_template = '''
         function initApp() {
             const userData = getUserDataFromUrl();
             if (userData.username) {
-                Telegram.WebApp.getUserProfilePhotos({
-                    user_id: Telegram.WebApp.initDataUnsafe.user.id,
-                    limit: 1
-                }, function(result) {
-                    if (result.photos.length > 0) {
-                        document.getElementById('userAvatar').style.backgroundImage = `url('${result.photos[0][0].file_id}')`;
-                    } else {
-                        document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
-                    }
-                    document.getElementById('userAvatar').style.backgroundSize = 'cover';
-                    document.getElementById('userAvatar').style.backgroundPosition = 'center';
-                });
+                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
+                document.getElementById('userAvatar').style.backgroundSize = 'cover';
+                document.getElementById('userAvatar').style.backgroundPosition = 'center';
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
                     method: 'POST',
@@ -197,7 +193,7 @@ html_template = '''
                 date.setDate(today.getDate() + i);
                 const eventElement = document.createElement('div');
                 eventElement.className = 'event';
-                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
+                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div class="event-description">No events</div>`;
                 eventsContainer.appendChild(eventElement);
             }
         }
