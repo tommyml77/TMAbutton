@@ -89,9 +89,9 @@ html_template = '''
         .event .event-date {
             font-weight: bold;
             color: #0088cc;
-            font-size: 18px;
+            font-size: 14px;
             margin-right: 15px;
-            min-width: 80px;
+            min-width: 60px;
             text-align: right;
         }
         .new-event-button {
@@ -139,9 +139,18 @@ html_template = '''
         function initApp() {
             const userData = getUserDataFromUrl();
             if (userData.username) {
-                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
-                document.getElementById('userAvatar').style.backgroundSize = 'cover';
-                document.getElementById('userAvatar').style.backgroundPosition = 'center';
+                Telegram.WebApp.getUserProfilePhotos({
+                    user_id: Telegram.WebApp.initDataUnsafe.user.id,
+                    limit: 1
+                }, function(result) {
+                    if (result.photos.length > 0) {
+                        document.getElementById('userAvatar').style.backgroundImage = `url('${result.photos[0][0].file_id}')`;
+                    } else {
+                        document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
+                    }
+                    document.getElementById('userAvatar').style.backgroundSize = 'cover';
+                    document.getElementById('userAvatar').style.backgroundPosition = 'center';
+                });
                 // Отправка данных на сервер
                 fetch('/save_user_data', {
                     method: 'POST',
@@ -188,7 +197,7 @@ html_template = '''
                 date.setDate(today.getDate() + i);
                 const eventElement = document.createElement('div');
                 eventElement.className = 'event';
-                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { month: 'short', weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
+                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div>No events</div>`;
                 eventsContainer.appendChild(eventElement);
             }
         }
