@@ -91,11 +91,11 @@ def change_color():
 def save_user_data():
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
-        if user_id:
-            user_data[user_id] = {
-                'username': user_id
-            }
+        username = data.get('username')
+        if username:
+            user_data[username] = {
+    'username': username
+}
             return {"status": "success"}, 200
         else:
             return {"status": "error", "message": "Username not provided"}, 400
