@@ -49,6 +49,7 @@ html_template = '''
             text-align: center;
             font-size: 24px;
             font-weight: bold;
+            cursor: pointer;
         }
         .today-button {
             width: 40px;
@@ -62,14 +63,23 @@ html_template = '''
             display: flex;
             padding: 10px;
             background-color: #2a2a2a;
-            justify-content: space-around;
+            overflow-x: auto;
         }
         .day {
-            flex: 1;
+            flex: 0 0 auto;
             text-align: center;
             padding: 5px;
             font-size: 12px;
             font-weight: bold;
+            position: relative;
+        }
+        .day::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            height: 100%;
+            width: 1px;
+            background-color: #555;
         }
         .day.selected {
             background-color: #0088cc;
@@ -121,7 +131,7 @@ html_template = '''
 <body>
     <div class="header">
         <div class="avatar" id="userAvatar"></div>
-        <div class="month-year" id="monthYear">October 2024</div>
+        <div class="month-year" id="monthYear" onclick="openMonthPicker()">October 2024</div>
         <button class="today-button" onclick="goToToday()">🔄</button>
     </div>
 
@@ -179,26 +189,60 @@ html_template = '''
         function loadWeekDays() {
             const weekDaysContainer = document.getElementById('weekDays');
             const today = new Date();
-            for (let i = -3; i <= 3; i++) {
-                const date = new Date();
-                date.setDate(today.getDate() + i);
+            const startDate = new Date(2024, 0, 1);
+            const endDate = new Date(2033, 11, 31);
+            let currentDate = new Date(startDate);
+
+            while (currentDate <= endDate) {
                 const dayElement = document.createElement('div');
-                dayElement.className = 'day' + (i === 0 ? ' selected' : '');
-                dayElement.innerHTML = `<div>${date.getDate()}</div><div>${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
+                dayElement.className = 'day';
+                dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
+                if (currentDate.getDay() === 0) {
+                    dayElement.style.borderRight = '1px solid #555';
+                }
                 weekDaysContainer.appendChild(dayElement);
+                currentDate.setDate(currentDate.getDate() + 1);
             }
         }
 
-        function loadEvents() {
-            const eventsContainer = document.getElementById('eventsContainer');
-            const today = new Date();
-            for (let i = 0; i < 7; i++) {
-                const date = new Date();
-                date.setDate(today.getDate() + i);
-                const eventElement = document.createElement('div');
-                eventElement.className = 'event';
-                eventElement.innerHTML = `<div class="event-date">${date.getDate()} ${date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div><div class="event-description">No events</div>`;
-                eventsContainer.appendChild(eventElement);
+        function openMonthPicker() {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let monthPickerHtml = '<select id="monthPicker">';
+            monthNames.forEach((month, index) => {
+                monthPickerHtml += `<option value="${index}">${month}</option>`;
+            });
+            monthPickerHtml += '</select><select id="yearPicker">';
+            for (let year = 2024; year <= 2033; year++) {
+                monthPickerHtml += `<option value="${year}">${year}</option>`;
+            }
+            monthPickerHtml += '</select><button onclick="applyMonthSelection()">Apply</button>';
+            document.body.insertAdjacentHTML('beforeend', `<div id="monthPickerContainer" style="position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%); background-color: #333; padding: 20px; border-radius: 10px; z-index: 1000;">${monthPickerHtml}</div>`);
+        }
+
+        function applyMonthSelection() {
+            const selectedMonth = document.getElementById('monthPicker').value;
+            const selectedYear = document.getElementById('yearPicker').value;
+            const selectedDate = new Date(selectedYear, selectedMonth, 1);
+            document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
+            document.getElementById('weekDays').innerHTML = '';
+            loadWeekDaysFrom(selectedDate);
+            document.getElementById('monthPickerContainer').remove();
+        }
+
+        function loadWeekDaysFrom(startDate) {
+            const weekDaysContainer = document.getElementById('weekDays');
+            const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+            let currentDate = new Date(startDate);
+
+            while (currentDate <= endDate) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
+                if (currentDate.getDay() === 0) {
+                    dayElement.style.borderRight = '1px solid #555';
+                }
+                weekDaysContainer.appendChild(dayElement);
+                currentDate.setDate(currentDate.getDate() + 1);
             }
         }
 
