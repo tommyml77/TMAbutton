@@ -1,8 +1,15 @@
-from flask import Flask, render_template_string
+# File: main.py
+
+from flask import Flask, render_template_string, request
 import random
 import os
+import threading
+import json
 
 app = Flask(__name__)
+
+# Сохранение данных пользователей
+user_data = {}
 
 html_template = '''
 <!DOCTYPE html>
@@ -25,6 +32,8 @@ html_template = '''
     </style>
 </head>
 <body>
+    <h3>Welcome to your personal calendar!</h3>
+    <p id="userInfo"></p>
     <button id="colorButton" onclick="changeColor()">Change Color</button>
 
     <script>
@@ -36,8 +45,33 @@ html_template = '''
                 });
         }
 
+        // Получение информации о пользователе из URL
+        function getUserDataFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                user_id: params.get('user_id')
+            };
+        }
+
+        // Инициализация приложения и передача данных о пользователе на сервер
+        function initApp() {
+            const userData = getUserDataFromUrl();
+            if (userData.user_id) {
+                document.getElementById('userInfo').innerText = `User ID: ${userData.user_id}`;
+                // Отправка данных на сервер
+                fetch('/save_user_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+            }
+        }
+
         // Initialize the Telegram Mini App
         Telegram.WebApp.ready();
+        initApp();
     </script>
 </body>
 </html>
@@ -52,7 +86,21 @@ def change_color():
     random_color = "#%06x" % random.randint(0, 0xFFFFFF)
     return {"color": random_color}
 
+@app.route('/save_user_data', methods=['POST'])
+def save_user_data():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        if user_id:
+            user_data[user_id] = {
+                'user_id': user_id
+            }
+            return {"status": "success"}, 200
+        else:
+            return {"status": "error", "message": "User ID not provided"}, 400
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
+
 if __name__ == '__main__':
-    # Запуск Flask приложения
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
