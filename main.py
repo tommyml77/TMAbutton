@@ -135,8 +135,8 @@ html_template = '''
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
             z-index: 1000;
         }
         .popup {
@@ -176,13 +176,23 @@ html_template = '''
         }
         .popup .central-line {
             position: absolute;
-            top: 50%;
+            top: 40%;
             left: 0;
             width: 100%;
             height: 2px;
             background-color: #0088cc;
             transform: translateY(-50%);
             z-index: 10;
+        }
+        .popup .central-line::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #0088cc;
+            transform: translateY(20px);
         }
         .popup button {
             width: 100%;
