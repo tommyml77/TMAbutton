@@ -82,6 +82,14 @@ html_template = '''
             background-color: #2a2a2a;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+        }
+        .week-days::-webkit-scrollbar {
+            height: 6px;
+        }
+        .week-days::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
         }
         .day {
             flex: 0 0 calc(100% / 7);
