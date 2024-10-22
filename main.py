@@ -79,7 +79,7 @@ html_template = '''
             right: -5px;
             height: 100%;
             width: 1px;
-            background-color: #555;
+            background-color: transparent;
         }
         .day.selected, .day.current {
             background-color: #0088cc;
@@ -133,18 +133,20 @@ html_template = '''
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
             z-index: 1000;
         }
         .popup {
             position: fixed;
-            top: 20%;
+            top: 50%;
             left: 50%;
-            transform: translate(-50%, -20%);
+            transform: translate(-50%, -50%);
             background-color: #333;
             padding: 20px;
             border-radius: 10px;
             z-index: 1001;
+            max-height: 60%;
+            overflow-y: auto;
         }
         .popup select {
             display: block;
