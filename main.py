@@ -129,72 +129,6 @@ html_template = '''
             left: 50%;
             transform: translateX(-50%);
         }
-        .popup-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(3px);
-            z-index: 1000;
-        }
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 80%;
-            max-width: 400px;
-        }
-        .popup .wheel-container {
-            display: flex;
-            overflow: hidden;
-            height: 120px;
-            width: 100%;
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .wheel {
-            flex: 1;
-            overflow-y: scroll;
-            height: 100%;
-            scrollbar-width: none;
-            text-align: center;
-            font-size: 20px;
-            padding: 10px 0;
-            scroll-snap-type: y mandatory;
-        }
-        .wheel::-webkit-scrollbar {
-            display: none;
-        }
-        .popup .central-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #0088cc;
-            transform: translateY(-50%);
-            z-index: 10;
-        }
-        .popup button {
-            width: 100%;
-            padding: 10px;
-            background-color: #0088cc;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -279,46 +213,49 @@ html_template = '''
         }
 
         function openMonthPicker() {
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            let monthPickerHtml = '<div class="popup-background" id="popupBackground"></div>';
-            monthPickerHtml += '<div class="popup" id="popup">';
-            monthPickerHtml += '<div class="wheel-container">';
-            monthPickerHtml += '<div class="central-line"></div>';
-            monthPickerHtml += '<div class="wheel" id="monthWheel" onscroll="snapToClosest(this)">';
-            monthNames.forEach((month, index) => {
-                monthPickerHtml += `<div>${month}</div>`;
+            Telegram.WebApp.showPopup({
+                title: "Choose Month and Year",
+                message: "Scroll to choose the desired month and year.",
+                buttons: [
+                    { id: "month", type: "select", options: [
+                        { text: "January", value: "0" },
+                        { text: "February", value: "1" },
+                        { text: "March", value: "2" },
+                        { text: "April", value: "3" },
+                        { text: "May", value: "4" },
+                        { text: "June", value: "5" },
+                        { text: "July", value: "6" },
+                        { text: "August", value: "7" },
+                        { text: "September", value: "8" },
+                        { text: "October", value: "9" },
+                        { text: "November", value: "10" },
+                        { text: "December", value: "11" }
+                    ]},
+                    { id: "year", type: "select", options: [
+                        { text: "2024", value: "2024" },
+                        { text: "2025", value: "2025" },
+                        { text: "2026", value: "2026" },
+                        { text: "2027", value: "2027" },
+                        { text: "2028", value: "2028" },
+                        { text: "2029", value: "2029" },
+                        { text: "2030", value: "2030" },
+                        { text: "2031", value: "2031" },
+                        { text: "2032", value: "2032" },
+                        { text: "2033", value: "2033" }
+                    ]},
+                    { id: "confirm", text: "Apply" }
+                ],
+                onResult: function(buttonId, result) {
+                    if (buttonId === "confirm") {
+                        const selectedMonth = parseInt(result.month);
+                        const selectedYear = parseInt(result.year);
+                        const selectedDate = new Date(selectedYear, selectedMonth, 1);
+                        document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
+                        document.getElementById('weekDays').innerHTML = '';
+                        loadWeekDaysFrom(selectedDate);
+                    }
+                }
             });
-            monthPickerHtml += '</div>';
-            monthPickerHtml += '<div class="wheel" id="yearWheel" onscroll="snapToClosest(this)">';
-            for (let year = 2024; year <= 2033; year++) {
-                monthPickerHtml += `<div>${year}</div>`;
-            }
-            monthPickerHtml += '</div>';
-            monthPickerHtml += '</div><button onclick="applyMonthSelection()">Apply</button>';
-            monthPickerHtml += '</div>';
-            document.body.insertAdjacentHTML('beforeend', monthPickerHtml);
-        }
-
-        function snapToClosest(element) {
-            setTimeout(() => {
-                const scrollPosition = element.scrollTop;
-                const itemHeight = 40;
-                const index = Math.round(scrollPosition / itemHeight);
-                element.scrollTo({ top: index * itemHeight, behavior: 'smooth' });
-            }, 100);
-        }
-
-        function applyMonthSelection() {
-            const selectedMonthIndex = Math.round(document.getElementById('monthWheel').scrollTop / 40);
-            const selectedYearIndex = Math.round(document.getElementById('yearWheel').scrollTop / 40);
-            const selectedMonth = selectedMonthIndex;
-            const selectedYear = 2024 + selectedYearIndex;
-            const selectedDate = new Date(selectedYear, selectedMonth, 1);
-            document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
-            document.getElementById('weekDays').innerHTML = '';
-            loadWeekDaysFrom(selectedDate);
-            document.getElementById('popupBackground').remove();
-            document.getElementById('popup').remove();
         }
 
         function loadWeekDaysFrom(startDate) {
