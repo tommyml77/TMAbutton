@@ -218,7 +218,7 @@ html_template = '''
             const lastName = params.get('last_name');
             const username = params.get('username');
             const languageCode = params.get('language_code');
-            const avatarUrl = params.get('profile_photo');
+            const avatarUrl = params.get('avatar');
             console.log('Extracted user data from URL:', {
                 userId, firstName, lastName, username, languageCode, avatarUrl
             });
@@ -234,25 +234,26 @@ html_template = '''
 
         function initApp() {
             const userData = getUserDataFromUrl();
-            if (userData.username) {
-                document.getElementById('userAvatar').style.backgroundImage = `url(${userData.avatar ? userData.avatar : 'https://ui-avatars.com/api/?name=' + userData.username + '&background=random'})`;
-                document.getElementById('userAvatar').style.backgroundSize = 'cover';
-                document.getElementById('userAvatar').style.backgroundPosition = 'center';
-                // Отправка данных на сервер
-                fetch('/save_user_data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                }).then(response => response.json()).then(data => {
-                    console.log('Server response:', data);
-                }).catch(error => {
-                    console.error('Error sending user data:', error);
-                });
-            } else {
-                document.getElementById('monthYear').innerText = 'No username provided in URL.';
+            if (userData.avatar) {
+                document.getElementById('userAvatar').style.backgroundImage = `url(${userData.avatar})`;
+            } else if (userData.username) {
+                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
             }
+            document.getElementById('userAvatar').style.backgroundSize = 'cover';
+            document.getElementById('userAvatar').style.backgroundPosition = 'center';
+
+            // Отправка данных на сервер
+            fetch('/save_user_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            }).then(response => response.json()).then(data => {
+                console.log('Server response:', data);
+            }).catch(error => {
+                console.error('Error sending user data:', error);
+            });
         }
 
         function goToToday() {
