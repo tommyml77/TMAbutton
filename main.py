@@ -11,6 +11,49 @@ app = Flask(__name__)
 # Сохранение данных пользователей
 user_data = {}
 
+event_form_template = '''
+<div class="event-form">
+    <input type="text" id="eventName" placeholder="Название события">
+    <div class="event-time">
+        <label>Начало</label>
+        <input type="date" id="eventStartDate">
+        <input type="time" id="eventStartTime">
+    </div>
+    <div class="event-time">
+        <label>Конец</label>
+        <input type="date" id="eventEndDate">
+        <input type="time" id="eventEndTime">
+    </div>
+    <div class="event-repeat">
+        <label>Повтор</label>
+        <select id="eventRepeat">
+            <option value="none">Не повторять</option>
+            <option value="daily">Ежедневно</option>
+            <option value="weekly">Еженедельно</option>
+            <option value="monthly">Ежемесячно</option>
+        </select>
+    </div>
+    <div class="event-reminder">
+        <label>Напоминание</label>
+        <select id="eventReminder">
+            <option value="15">За 15 минут</option>
+            <option value="30">За 30 минут</option>
+            <option value="60">За 60 минут</option>
+        </select>
+    </div>
+    <div class="event-invite">
+        <label>Приглашение участников</label>
+        <input type="text" id="eventInvite" placeholder="Приглашение участников">
+    </div>
+    <div class="event-location">
+        <label>Локация или ссылка на звонок</label>
+        <input type="text" id="eventLocation" placeholder="Локация или ссылка на звонок">
+    </div>
+    <textarea id="eventDescription" placeholder="Описание"></textarea>
+    <button onclick="saveEvent()">Добавить событие</button>
+</div>
+'''
+
 calendar_template = '''
 <div class="week-days" id="weekDays">
     <!-- Дни недели будут добавлены динамически -->
@@ -18,6 +61,7 @@ calendar_template = '''
 <div class="events-container" id="eventsContainer">
     <!-- События будут добавлены динамически -->
 </div>
+<button class="new-event-button" onclick="openEventForm()">Добавить событие</button>
 '''
 
 games_template = '''
@@ -345,6 +389,11 @@ html_template = '''
             }
         }
 
+        function openEventForm() {
+            const contentContainer = document.getElementById('contentContainer');
+            contentContainer.innerHTML = `{{ event_form_template | safe }}`;
+        }
+
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         initApp();
@@ -356,7 +405,7 @@ html_template = '''
 
 @app.route('/')
 def index():
-    return render_template_string(html_template, calendar_template=calendar_template, games_template=games_template, settings_template=settings_template)
+    return render_template_string(html_template, calendar_template=calendar_template, games_template=games_template, settings_template=settings_template, event_form_template=event_form_template)
 
 @app.route('/change_color')
 def change_color():
