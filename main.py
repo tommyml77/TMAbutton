@@ -135,8 +135,8 @@ html_template = '''
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(3px);
             z-index: 1000;
         }
         .popup {
@@ -170,29 +170,20 @@ html_template = '''
             text-align: center;
             font-size: 20px;
             padding: 10px 0;
+            scroll-snap-type: y mandatory;
         }
         .wheel::-webkit-scrollbar {
             display: none;
         }
         .popup .central-line {
             position: absolute;
-            top: 40%;
+            top: 50%;
             left: 0;
             width: 100%;
             height: 2px;
             background-color: #0088cc;
             transform: translateY(-50%);
             z-index: 10;
-        }
-        .popup .central-line::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #0088cc;
-            transform: translateY(20px);
         }
         .popup button {
             width: 100%;
@@ -293,12 +284,12 @@ html_template = '''
             monthPickerHtml += '<div class="popup" id="popup">';
             monthPickerHtml += '<div class="wheel-container">';
             monthPickerHtml += '<div class="central-line"></div>';
-            monthPickerHtml += '<div class="wheel" id="monthWheel">';
+            monthPickerHtml += '<div class="wheel" id="monthWheel" onscroll="snapToClosest(this)">';
             monthNames.forEach((month, index) => {
                 monthPickerHtml += `<div>${month}</div>`;
             });
             monthPickerHtml += '</div>';
-            monthPickerHtml += '<div class="wheel" id="yearWheel">';
+            monthPickerHtml += '<div class="wheel" id="yearWheel" onscroll="snapToClosest(this)">';
             for (let year = 2024; year <= 2033; year++) {
                 monthPickerHtml += `<div>${year}</div>`;
             }
@@ -308,11 +299,20 @@ html_template = '''
             document.body.insertAdjacentHTML('beforeend', monthPickerHtml);
         }
 
+        function snapToClosest(element) {
+            setTimeout(() => {
+                const scrollPosition = element.scrollTop;
+                const itemHeight = 40;
+                const index = Math.round(scrollPosition / itemHeight);
+                element.scrollTo({ top: index * itemHeight, behavior: 'smooth' });
+            }, 100);
+        }
+
         function applyMonthSelection() {
-            const selectedMonthIndex = document.getElementById('monthWheel').scrollTop / 40;
-            const selectedYearIndex = document.getElementById('yearWheel').scrollTop / 40;
-            const selectedMonth = Math.round(selectedMonthIndex);
-            const selectedYear = 2024 + Math.round(selectedYearIndex);
+            const selectedMonthIndex = Math.round(document.getElementById('monthWheel').scrollTop / 40);
+            const selectedYearIndex = Math.round(document.getElementById('yearWheel').scrollTop / 40);
+            const selectedMonth = selectedMonthIndex;
+            const selectedYear = 2024 + selectedYearIndex;
             const selectedDate = new Date(selectedYear, selectedMonth, 1);
             document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
             document.getElementById('weekDays').innerHTML = '';
