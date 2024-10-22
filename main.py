@@ -249,47 +249,17 @@ html_template = '''
         }
 
         function openMonthPicker() {
-            Telegram.WebApp.showPopup({
+            Telegram.WebApp.showDatePicker({
                 title: "Choose Month and Year",
-                message: "Scroll to choose the desired month and year.",
-                buttons: [
-                    { id: "month", type: "select", options: [
-                        { text: "January", value: "0" },
-                        { text: "February", value: "1" },
-                        { text: "March", value: "2" },
-                        { text: "April", value: "3" },
-                        { text: "May", value: "4" },
-                        { text: "June", value: "5" },
-                        { text: "July", value: "6" },
-                        { text: "August", value: "7" },
-                        { text: "September", value: "8" },
-                        { text: "October", value: "9" },
-                        { text: "November", value: "10" },
-                        { text: "December", value: "11" }
-                    ]},
-                    { id: "year", type: "select", options: [
-                        { text: "2024", value: "2024" },
-                        { text: "2025", value: "2025" },
-                        { text: "2026", value: "2026" },
-                        { text: "2027", value: "2027" },
-                        { text: "2028", value: "2028" },
-                        { text: "2029", value: "2029" },
-                        { text: "2030", value: "2030" },
-                        { text: "2031", value: "2031" },
-                        { text: "2032", value: "2032" },
-                        { text: "2033", value: "2033" }
-                    ]},
-                    { id: "confirm", text: "Apply" }
-                ],
-                onResult: function(buttonId, result) {
-                    if (buttonId === "confirm") {
-                        const selectedMonth = parseInt(result.month);
-                        const selectedYear = parseInt(result.year);
-                        const selectedDate = new Date(selectedYear, selectedMonth, 1);
-                        document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
-                        document.getElementById('weekDays').innerHTML = '';
-                        loadWeekDaysFrom(selectedDate);
-                    }
+                min_date: new Date(2024, 0, 1).toISOString(),
+                max_date: new Date(2033, 11, 31).toISOString(),
+                on_result: function(date) {
+                    const selectedDate = new Date(date);
+                    const selectedMonth = selectedDate.getMonth();
+                    const selectedYear = selectedDate.getFullYear();
+                    document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
+                    document.getElementById('weekDays').innerHTML = '';
+                    loadWeekDaysFrom(selectedDate);
                 }
             });
         }
