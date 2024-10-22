@@ -125,9 +125,28 @@ html_template = '''
             border-radius: 5px;
             cursor: pointer;
             position: fixed;
-            bottom: 20px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
+        }
+        .tabs {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .tab {
+            flex-grow: 1;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+        }
+        .tab-icon {
+            font-size: 24px;
+            display: block;
         }
     </style>
 </head>
@@ -147,6 +166,21 @@ html_template = '''
     </div>
 
     <div class="new-event-button" onclick="addNewEvent()">New Event</div>
+
+    <div class="tabs">
+        <div class="tab" onclick="openTab('calendar')">
+            <span class="tab-icon">📅</span>
+            Calendar
+        </div>
+        <div class="tab" onclick="openTab('games')">
+            <span class="tab-icon">🎮</span>
+            Games
+        </div>
+        <div class="tab" onclick="openTab('settings')">
+            <span class="tab-icon">⚙️</span>
+            Settings
+        </div>
+    </div>
 
     <script>
         function getUserDataFromUrl() {
@@ -288,6 +322,15 @@ html_template = '''
                     dayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
+        }
+
+        function openTab(tabName) {
+            if (tabName === 'calendar') {
+                document.querySelector('.events-container').innerHTML = '';
+                loadWeekDays();
+            } else if (tabName === 'games' || tabName === 'settings') {
+                document.querySelector('.events-container').innerHTML = `<div style="text-align: center; margin-top: 20px;">Coming soon...</div>`;
+            }
         }
 
         Telegram.WebApp.ready();
