@@ -241,7 +241,7 @@ html_template = '''
 
         function goToToday() {
             const today = new Date();
-            highlightCurrentDay(today);
+            highlightCurrentWeek(today);
         }
 
         function openMonthPicker() {
@@ -309,8 +309,23 @@ html_template = '''
                 currentDate.setDate(currentDate.getDate() + 1);
                 weekCounter++;
             }
-            // Прокрутка к сегодняшнему дню
-            document.querySelector('.current').scrollIntoView({ inline: 'center', behavior: 'smooth' });
+            // Прокрутка к текущей неделе
+            document.querySelector('.current').scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+        }
+
+        function highlightCurrentWeek(startDate) {
+            const weekDaysContainer = document.getElementById('weekDays');
+            const days = weekDaysContainer.getElementsByClassName('day');
+            for (let i = 0; i < days.length; i++) {
+                const day = days[i];
+                const currentDate = new Date(startDate);
+                currentDate.setDate(currentDate.getDate() + (i % 7));
+
+                if (i % 7 === 0) {
+                    // Начало новой недели
+                    day.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+                }
+            }
         }
 
         Telegram.WebApp.ready();
