@@ -81,7 +81,7 @@ html_template = '''
             width: 1px;
             background-color: #555;
         }
-        .day.selected {
+        .day.selected, .day.current {
             background-color: #0088cc;
             border-radius: 5px;
             color: white;
@@ -125,6 +125,45 @@ html_template = '''
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
+        }
+        .popup-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+        .popup {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -20%);
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1001;
+        }
+        .popup select {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+        .popup button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -179,7 +218,8 @@ html_template = '''
         }
 
         function goToToday() {
-            alert("Navigating to today's date!");
+            const today = new Date();
+            highlightCurrentDay(today);
         }
 
         function addNewEvent() {
@@ -200,6 +240,9 @@ html_template = '''
                 if (currentDate.getDay() === 0) {
                     dayElement.style.borderRight = '1px solid #555';
                 }
+                if (currentDate.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('current');
+                }
                 weekDaysContainer.appendChild(dayElement);
                 currentDate.setDate(currentDate.getDate() + 1);
             }
@@ -207,7 +250,9 @@ html_template = '''
 
         function openMonthPicker() {
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            let monthPickerHtml = '<select id="monthPicker">';
+            let monthPickerHtml = '<div class="popup-background" id="popupBackground"></div>';
+            monthPickerHtml += '<div class="popup" id="popup">';
+            monthPickerHtml += '<select id="monthPicker">';
             monthNames.forEach((month, index) => {
                 monthPickerHtml += `<option value="${index}">${month}</option>`;
             });
@@ -216,7 +261,8 @@ html_template = '''
                 monthPickerHtml += `<option value="${year}">${year}</option>`;
             }
             monthPickerHtml += '</select><button onclick="applyMonthSelection()">Apply</button>';
-            document.body.insertAdjacentHTML('beforeend', `<div id="monthPickerContainer" style="position: fixed; top: 20%; left: 50%; transform: translate(-50%, -20%); background-color: #333; padding: 20px; border-radius: 10px; z-index: 1000;">${monthPickerHtml}</div>`);
+            monthPickerHtml += '</div>';
+            document.body.insertAdjacentHTML('beforeend', monthPickerHtml);
         }
 
         function applyMonthSelection() {
@@ -226,7 +272,8 @@ html_template = '''
             document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
             document.getElementById('weekDays').innerHTML = '';
             loadWeekDaysFrom(selectedDate);
-            document.getElementById('monthPickerContainer').remove();
+            document.getElementById('popupBackground').remove();
+            document.getElementById('popup').remove();
         }
 
         function loadWeekDaysFrom(startDate) {
@@ -241,9 +288,22 @@ html_template = '''
                 if (currentDate.getDay() === 0) {
                     dayElement.style.borderRight = '1px solid #555';
                 }
+                if (currentDate.toDateString() === new Date().toDateString()) {
+                    dayElement.classList.add('current');
+                }
                 weekDaysContainer.appendChild(dayElement);
                 currentDate.setDate(currentDate.getDate() + 1);
             }
+        }
+
+        function highlightCurrentDay(date) {
+            const weekDaysContainer = document.getElementById('weekDays');
+            Array.from(weekDaysContainer.children).forEach(dayElement => {
+                const day = parseInt(dayElement.firstChild.textContent, 10);
+                if (day === date.getDate() && dayElement.classList.contains('current')) {
+                    dayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
         }
 
         Telegram.WebApp.ready();
