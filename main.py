@@ -80,8 +80,15 @@ html_template = '''
             display: flex;
             padding: 10px;
             background-color: #2a2a2a;
-            overflow-x: hidden;
+            overflow-x: auto;
             scroll-snap-type: x mandatory;
+        }
+        .week-days::-webkit-scrollbar {
+            height: 8px;
+        }
+        .week-days::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
         }
         .day {
             flex: 0 0 calc(100% / 7);
