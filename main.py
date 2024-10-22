@@ -173,8 +173,8 @@ html_template = '''
 <body>
     <div class="header">
         <div class="avatar" id="userAvatar"></div>
-        <div class="month-year" id="monthYear" onclick="openMonthPicker()">October 2024</div>
-        <button class="today-button" onclick="goToToday()">🔄</button>
+        <div class="month-year" id="monthYear" onclick="openMonthPicker()" style="display: none;">October 2024</div>
+        <button class="today-button" onclick="goToToday()" style="display: none;">🔄</button>
     </div>
 
     <div id="contentContainer">
@@ -257,13 +257,18 @@ html_template = '''
             document.getElementById(tabName + 'Tab').classList.add('active');
 
             const contentContainer = document.getElementById('contentContainer');
+            const headerElements = document.querySelectorAll('.month-year, .today-button');
+
             if (tabName === 'calendar') {
                 contentContainer.innerHTML = `{{ calendar_template | safe }}`;
+                headerElements.forEach(el => el.style.display = 'block');
                 loadWeekDays();
             } else if (tabName === 'games') {
                 contentContainer.innerHTML = `{{ games_template | safe }}`;
+                headerElements.forEach(el => el.style.display = 'none');
             } else if (tabName === 'settings') {
                 contentContainer.innerHTML = `{{ settings_template | safe }}`;
+                headerElements.forEach(el => el.style.display = 'none');
             }
         }
 
