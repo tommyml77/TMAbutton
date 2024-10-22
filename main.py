@@ -210,6 +210,8 @@ html_template = '''
                 weekDaysContainer.appendChild(dayElement);
                 currentDate.setDate(currentDate.getDate() + 1);
             }
+            // Прокрутка к сегодняшнему дню
+            document.querySelector('.current').scrollIntoView({ inline: 'start', behavior: 'smooth' });
         }
 
         function openMonthPicker() {
