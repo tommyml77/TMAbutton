@@ -213,12 +213,21 @@ html_template = '''
     <script>
         function getUserDataFromUrl() {
             const params = new URLSearchParams(window.location.search);
+            const userId = params.get('id');
+            const firstName = params.get('first_name');
+            const lastName = params.get('last_name');
             const username = params.get('username');
-            const avatarUrl = params.get('avatar');
-            console.log('Extracted username from URL:', username);
-            console.log('Extracted avatar URL from URL:', avatarUrl);
+            const languageCode = params.get('language_code');
+            const avatarUrl = params.get('profile_photo');
+            console.log('Extracted user data from URL:', {
+                userId, firstName, lastName, username, languageCode, avatarUrl
+            });
             return {
+                id: userId,
+                first_name: firstName,
+                last_name: lastName,
                 username: username,
+                language_code: languageCode,
                 avatar: avatarUrl
             };
         }
@@ -357,18 +366,26 @@ def change_color():
 def save_user_data():
     try:
         data = request.get_json()
+        user_id = data.get('id')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
         username = data.get('username')
+        language_code = data.get('language_code')
         avatar = data.get('avatar')
-        if username:
-            user_data[username] = {
+        if user_id:
+            user_data[user_id] = {
+                'id': user_id,
+                'first_name': first_name,
+                'last_name': last_name,
                 'username': username,
+                'language_code': language_code,
                 'avatar': avatar
             }
-            print(f"Received user data: {user_data[username]}")  # Отладочный вывод
+            print(f"Received user data: {user_data[user_id]}")  # Отладочный вывод
             return {"status": "success"}, 200
         else:
-            print("Username not provided in the request.")  # Отладочный вывод
-            return {"status": "error", "message": "Username not provided"}, 400
+            print("User ID not provided in the request.")  # Отладочный вывод
+            return {"status": "error", "message": "User ID not provided"}, 400
     except Exception as e:
         print(f"Error processing user data: {e}")  # Отладочный вывод
         return {"status": "error", "message": str(e)}, 500
