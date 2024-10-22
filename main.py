@@ -299,7 +299,7 @@ html_template = '''
                     dayElement.classList.add('current');
                 }
 
-                1 {
+                if (currentDate.getDay() === 1 && weekCounter > 0) {
                     dayElement.classList.add('week-divider');
                 }
 
