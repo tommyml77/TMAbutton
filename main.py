@@ -11,6 +11,23 @@ app = Flask(__name__)
 # Сохранение данных пользователей
 user_data = {}
 
+calendar_template = '''
+<div class="week-days" id="weekDays">
+    <!-- Дни недели будут добавлены динамически -->
+</div>
+<div class="events-container" id="eventsContainer">
+    <!-- События будут добавлены динамически -->
+</div>
+'''
+
+games_template = '''
+<div style="text-align: center; margin-top: 20px;">Coming soon...</div>
+'''
+
+settings_template = '''
+<div style="text-align: center; margin-top: 20px;">Coming soon...</div>
+'''
+
 html_template = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -160,12 +177,8 @@ html_template = '''
         <button class="today-button" onclick="goToToday()">🔄</button>
     </div>
 
-    <div class="week-days" id="weekDays">
-        <!-- Дни недели будут добавлены динамически -->
-    </div>
-
-    <div class="events-container" id="eventsContainer">
-        <!-- События будут добавлены динамически -->
+    <div id="contentContainer">
+        <!-- Контент вкладок будет добавлен динамически -->
     </div>
 
     <div class="tabs">
@@ -241,16 +254,16 @@ html_template = '''
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            const contentContainer = document.getElementById('contentContainer');
             if (tabName === 'calendar') {
-                document.getElementById('calendarTab').classList.add('active');
-                document.querySelector('.events-container').innerHTML = '';
+                contentContainer.innerHTML = `{{ calendar_template | safe }}`;
                 loadWeekDays();
             } else if (tabName === 'games') {
-                document.getElementById('gamesTab').classList.add('active');
-                document.querySelector('.events-container').innerHTML = `<div style="text-align: center; margin-top: 20px;">Coming soon...</div>`;
+                contentContainer.innerHTML = `{{ games_template | safe }}`;
             } else if (tabName === 'settings') {
-                document.getElementById('settingsTab').classList.add('active');
-                document.querySelector('.events-container').innerHTML = `<div style="text-align: center; margin-top: 20px;">Coming soon...</div>`;
+                contentContainer.innerHTML = `{{ settings_template | safe }}`;
             }
         }
 
@@ -281,8 +294,7 @@ html_template = '''
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         initApp();
-        loadWeekDays();
-        loadEvents();
+        openTab('calendar');
     </script>
 </body>
 </html>
@@ -290,7 +302,7 @@ html_template = '''
 
 @app.route('/')
 def index():
-    return render_template_string(html_template)
+    return render_template_string(html_template, calendar_template=calendar_template, games_template=games_template, settings_template=settings_template)
 
 @app.route('/change_color')
 def change_color():
