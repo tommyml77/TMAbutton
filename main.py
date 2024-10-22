@@ -214,16 +214,19 @@ html_template = '''
         function getUserDataFromUrl() {
             const params = new URLSearchParams(window.location.search);
             const username = params.get('username');
+            const avatarUrl = params.get('avatar');
             console.log('Extracted username from URL:', username);
+            console.log('Extracted avatar URL from URL:', avatarUrl);
             return {
-                username: username
+                username: username,
+                avatar: avatarUrl
             };
         }
 
         function initApp() {
             const userData = getUserDataFromUrl();
             if (userData.username) {
-                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
+                document.getElementById('userAvatar').style.backgroundImage = `url(${userData.avatar ? userData.avatar : 'https://ui-avatars.com/api/?name=' + userData.username + '&background=random'})`;
                 document.getElementById('userAvatar').style.backgroundSize = 'cover';
                 document.getElementById('userAvatar').style.backgroundPosition = 'center';
                 // Отправка данных на сервер
@@ -355,9 +358,11 @@ def save_user_data():
     try:
         data = request.get_json()
         username = data.get('username')
+        avatar = data.get('avatar')
         if username:
             user_data[username] = {
-                'username': username
+                'username': username,
+                'avatar': avatar
             }
             print(f"Received user data: {user_data[username]}")  # Отладочный вывод
             return {"status": "success"}, 200
