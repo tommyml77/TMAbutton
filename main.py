@@ -81,6 +81,7 @@ html_template = '''
             padding: 10px;
             background-color: #2a2a2a;
             overflow-x: auto;
+            scroll-snap-type: x mandatory;
         }
         .day {
             flex: 0 0 calc(100% / 7);
@@ -93,6 +94,7 @@ html_template = '''
             display: flex;
             flex-direction: column;
             justify-content: center;
+            scroll-snap-align: center;
         }
         .day.past {
             color: #777;
@@ -308,7 +310,7 @@ html_template = '''
                 weekCounter++;
             }
             // Прокрутка к сегодняшнему дню
-            document.querySelector('.current').scrollIntoView({ inline: 'start', behavior: 'smooth' });
+            document.querySelector('.current').scrollIntoView({ inline: 'center', behavior: 'smooth' });
         }
 
         Telegram.WebApp.ready();
