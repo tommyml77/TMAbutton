@@ -83,7 +83,7 @@ html_template = '''
             overflow-x: auto;
         }
         .day {
-            flex: 1;
+            flex: 0 0 calc(100% / 7);
             text-align: center;
             padding: 5px;
             font-size: 12px;
