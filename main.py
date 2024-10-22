@@ -144,6 +144,9 @@ html_template = '''
             color: white;
             cursor: pointer;
         }
+        .tab.active {
+            background-color: #0088cc;
+        }
         .tab-icon {
             font-size: 24px;
             display: block;
@@ -168,15 +171,15 @@ html_template = '''
     <div class="new-event-button" onclick="addNewEvent()">New Event</div>
 
     <div class="tabs">
-        <div class="tab" onclick="openTab('calendar')">
+        <div class="tab" id="calendarTab" onclick="openTab('calendar')">
             <span class="tab-icon">📅</span>
             Calendar
         </div>
-        <div class="tab" onclick="openTab('games')">
+        <div class="tab" id="gamesTab" onclick="openTab('games')">
             <span class="tab-icon">🎮</span>
             Games
         </div>
-        <div class="tab" onclick="openTab('settings')">
+        <div class="tab" id="settingsTab" onclick="openTab('settings')">
             <span class="tab-icon">⚙️</span>
             Settings
         </div>
@@ -295,10 +298,18 @@ html_template = '''
         }
 
         function openTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
             if (tabName === 'calendar') {
+                document.getElementById('calendarTab').classList.add('active');
                 document.querySelector('.events-container').innerHTML = '';
                 loadWeekDays();
-            } else if (tabName === 'games' || tabName === 'settings') {
+            } else if (tabName === 'games') {
+                document.getElementById('gamesTab').classList.add('active');
+                document.querySelector('.events-container').innerHTML = `<div style="text-align: center; margin-top: 20px;">Coming soon...</div>`;
+            } else if (tabName === 'settings') {
+                document.getElementById('settingsTab').classList.add('active');
                 document.querySelector('.events-container').innerHTML = `<div style="text-align: center; margin-top: 20px;">Coming soon...</div>`;
             }
         }
