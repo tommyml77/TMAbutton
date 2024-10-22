@@ -83,12 +83,13 @@ html_template = '''
             overflow-x: auto;
         }
         .day {
-            flex: 0 0 auto;
+            flex: 1;
             text-align: center;
             padding: 5px;
             font-size: 12px;
             font-weight: bold;
             position: relative;
+            box-sizing: border-box;
         }
         .day.past {
             color: #777;
