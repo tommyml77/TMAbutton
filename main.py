@@ -73,6 +73,9 @@ html_template = '''
             font-weight: bold;
             position: relative;
         }
+        .day.past {
+            color: #777;
+        }
         .day::after {
             content: '';
             position: absolute;
@@ -145,17 +148,24 @@ html_template = '''
             padding: 20px;
             border-radius: 10px;
             z-index: 1001;
-            max-height: 60%;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .popup select {
-            display: block;
-            width: 100%;
+        .popup .wheel-container {
+            display: flex;
+            overflow: hidden;
+            height: 100px;
             margin-bottom: 10px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
+        }
+        .wheel {
+            flex: 1;
+            overflow-y: scroll;
+            height: 100%;
+            scrollbar-width: none;
+        }
+        .wheel::-webkit-scrollbar {
+            display: none;
         }
         .popup button {
             width: 100%;
@@ -239,8 +249,8 @@ html_template = '''
                 const dayElement = document.createElement('div');
                 dayElement.className = 'day';
                 dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
-                if (currentDate.getDay() === 0) {
-                    dayElement.style.borderRight = '1px solid #555';
+                if (currentDate < today) {
+                    dayElement.classList.add('past');
                 }
                 if (currentDate.toDateString() === today.toDateString()) {
                     dayElement.classList.add('current');
@@ -254,22 +264,27 @@ html_template = '''
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             let monthPickerHtml = '<div class="popup-background" id="popupBackground"></div>';
             monthPickerHtml += '<div class="popup" id="popup">';
-            monthPickerHtml += '<select id="monthPicker">';
+            monthPickerHtml += '<div class="wheel-container">';
+            monthPickerHtml += '<div class="wheel" id="monthWheel">';
             monthNames.forEach((month, index) => {
-                monthPickerHtml += `<option value="${index}">${month}</option>`;
+                monthPickerHtml += `<div>${month}</div>`;
             });
-            monthPickerHtml += '</select><select id="yearPicker">';
+            monthPickerHtml += '</div>';
+            monthPickerHtml += '<div class="wheel" id="yearWheel">';
             for (let year = 2024; year <= 2033; year++) {
-                monthPickerHtml += `<option value="${year}">${year}</option>`;
+                monthPickerHtml += `<div>${year}</div>`;
             }
-            monthPickerHtml += '</select><button onclick="applyMonthSelection()">Apply</button>';
+            monthPickerHtml += '</div>';
+            monthPickerHtml += '</div><button onclick="applyMonthSelection()">Apply</button>';
             monthPickerHtml += '</div>';
             document.body.insertAdjacentHTML('beforeend', monthPickerHtml);
         }
 
         function applyMonthSelection() {
-            const selectedMonth = document.getElementById('monthPicker').value;
-            const selectedYear = document.getElementById('yearPicker').value;
+            const selectedMonthIndex = document.getElementById('monthWheel').scrollTop / 40;
+            const selectedYearIndex = document.getElementById('yearWheel').scrollTop / 40;
+            const selectedMonth = Math.round(selectedMonthIndex);
+            const selectedYear = 2024 + Math.round(selectedYearIndex);
             const selectedDate = new Date(selectedYear, selectedMonth, 1);
             document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
             document.getElementById('weekDays').innerHTML = '';
@@ -287,8 +302,8 @@ html_template = '''
                 const dayElement = document.createElement('div');
                 dayElement.className = 'day';
                 dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
-                if (currentDate.getDay() === 0) {
-                    dayElement.style.borderRight = '1px solid #555';
+                if (currentDate < new Date()) {
+                    dayElement.classList.add('past');
                 }
                 if (currentDate.toDateString() === new Date().toDateString()) {
                     dayElement.classList.add('current');
