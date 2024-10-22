@@ -160,15 +160,9 @@ html_template = '''
         <button class="today-button" onclick="goToToday()">🔄</button>
     </div>
 
-    <div class="week-days" id="weekDays">
-        <!-- Дни недели будут добавлены динамически -->
-    </div>
-
     <div class="events-container" id="eventsContainer">
         <!-- События будут добавлены динамически -->
     </div>
-
-    <div class="new-event-button" onclick="addNewEvent()">New Event</div>
 
     <div class="tabs">
         <div class="tab" id="calendarTab" onclick="openTab('calendar')">
@@ -223,34 +217,6 @@ html_template = '''
             highlightCurrentDay(today);
         }
 
-        function addNewEvent() {
-            alert("Adding a new event!");
-        }
-
-        function loadWeekDays() {
-            const weekDaysContainer = document.getElementById('weekDays');
-            const today = new Date();
-            const startDate = new Date(2024, 0, 1);
-            const endDate = new Date(2033, 11, 31);
-            let currentDate = new Date(startDate);
-
-            while (currentDate <= endDate) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day';
-                dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
-                if (currentDate < today) {
-                    dayElement.classList.add('past');
-                }
-                if (currentDate.toDateString() === today.toDateString()) {
-                    dayElement.classList.add('current');
-                }
-                weekDaysContainer.appendChild(dayElement);
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            // Прокрутка к сегодняшнему дню
-            document.querySelector('.current').scrollIntoView({ inline: 'start', behavior: 'smooth' });
-        }
-
         function openMonthPicker() {
             Telegram.WebApp.showDatePicker({
                 title: "Choose Month and Year",
@@ -263,36 +229,6 @@ html_template = '''
                     document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
                     document.getElementById('weekDays').innerHTML = '';
                     loadWeekDaysFrom(selectedDate);
-                }
-            });
-        }
-
-        function loadWeekDaysFrom(startDate) {
-            const weekDaysContainer = document.getElementById('weekDays');
-            const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-            let currentDate = new Date(startDate);
-
-            while (currentDate <= endDate) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'day';
-                dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
-                if (currentDate < new Date()) {
-                    dayElement.classList.add('past');
-                }
-                if (currentDate.toDateString() === new Date().toDateString()) {
-                    dayElement.classList.add('current');
-                }
-                weekDaysContainer.appendChild(dayElement);
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-        }
-
-        function highlightCurrentDay(date) {
-            const weekDaysContainer = document.getElementById('weekDays');
-            Array.from(weekDaysContainer.children).forEach(dayElement => {
-                const day = parseInt(dayElement.firstChild.textContent, 10);
-                if (day === date.getDate() && dayElement.classList.contains('current')) {
-                    dayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
         }
