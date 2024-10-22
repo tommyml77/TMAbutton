@@ -90,6 +90,9 @@ html_template = '''
             font-weight: bold;
             position: relative;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .day.past {
             color: #777;
@@ -168,6 +171,10 @@ html_template = '''
         .tab-icon {
             font-size: 24px;
             display: block;
+        }
+        .week-divider {
+            border-left: 1px solid #555;
+            margin-left: -1px;
         }
     </style>
 </head>
@@ -280,6 +287,7 @@ html_template = '''
             const endDate = new Date(2033, 11, 31);
             let currentDate = new Date(startDate);
 
+            let weekCounter = 0;
             while (currentDate <= endDate) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'day';
@@ -290,8 +298,14 @@ html_template = '''
                 if (currentDate.toDateString() === today.toDateString()) {
                     dayElement.classList.add('current');
                 }
+
+                if (currentDate.getDay() === 0 && weekCounter > 0) {
+                    dayElement.classList.add('week-divider');
+                }
+
                 weekDaysContainer.appendChild(dayElement);
                 currentDate.setDate(currentDate.getDate() + 1);
+                weekCounter++;
             }
             // Прокрутка к сегодняшнему дню
             document.querySelector('.current').scrollIntoView({ inline: 'start', behavior: 'smooth' });
