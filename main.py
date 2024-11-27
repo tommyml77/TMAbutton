@@ -13,22 +13,19 @@ user_data = {}
 
 event_form_template = '''
 <div class="event-form">
-    <div class="form-group">
-        <label for="eventName">Название события</label>
-        <input type="text" id="eventName" placeholder="Введите название события">
-    </div>
-    <div class="form-group">
-        <label for="eventStartDate">Начало</label>
+    <input type="text" id="eventName" placeholder="Название события">
+    <div class="event-time">
+        <label>Начало</label>
         <input type="date" id="eventStartDate">
         <input type="time" id="eventStartTime">
     </div>
-    <div class="form-group">
-        <label for="eventEndDate">Конец</label>
+    <div class="event-time">
+        <label>Конец</label>
         <input type="date" id="eventEndDate">
         <input type="time" id="eventEndTime">
     </div>
-    <div class="form-group">
-        <label for="eventRepeat">Повтор</label>
+    <div class="event-repeat">
+        <label>Повтор</label>
         <select id="eventRepeat">
             <option value="none">Не повторять</option>
             <option value="daily">Ежедневно</option>
@@ -36,27 +33,24 @@ event_form_template = '''
             <option value="monthly">Ежемесячно</option>
         </select>
     </div>
-    <div class="form-group">
-        <label for="eventReminder">Напоминание</label>
+    <div class="event-reminder">
+        <label>Напоминание</label>
         <select id="eventReminder">
             <option value="15">За 15 минут</option>
             <option value="30">За 30 минут</option>
             <option value="60">За 60 минут</option>
         </select>
     </div>
-    <div class="form-group">
-        <label for="eventInvite">Приглашение участников</label>
-        <input type="text" id="eventInvite" placeholder="Введите участников">
+    <div class="event-invite">
+        <label>Приглашение участников</label>
+        <input type="text" id="eventInvite" placeholder="Приглашение участников">
     </div>
-    <div class="form-group">
-        <label for="eventLocation">Локация или ссылка на звонок</label>
-        <input type="text" id="eventLocation" placeholder="Введите локацию или ссылку на звонок">
+    <div class="event-location">
+        <label>Локация или ссылка на звонок</label>
+        <input type="text" id="eventLocation" placeholder="Локация или ссылка на звонок">
     </div>
-    <div class="form-group">
-        <label for="eventDescription">Описание</label>
-        <textarea id="eventDescription" placeholder="Введите описание"></textarea>
-    </div>
-    <button class="save-event-button" onclick="saveEvent()">Добавить событие</button>
+    <textarea id="eventDescription" placeholder="Описание"></textarea>
+    <button onclick="saveEvent()">Добавить событие</button>
 </div>
 '''
 
@@ -232,36 +226,13 @@ html_template = '''
             border-left: 1px solid #555;
             margin-left: -1px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            box-sizing: border-box;
-        }
-        .save-event-button {
-            background-color: #0088cc;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="avatar" id="userAvatar"></div>
-        <div class="month-year" id="monthYear" onclick="openMonthPicker()">October 2024</div>
-        <button class="today-button" onclick="goToToday()">📅</button>
+        <div class="month-year" id="monthYear" onclick="openMonthPicker()" style="display: none;">October 2024</div>
+        <button class="today-button" onclick="goToToday()" style="display: none;">🔄</button>
     </div>
 
     <div id="contentContainer">
@@ -308,9 +279,9 @@ html_template = '''
         function initApp() {
             const userData = getUserDataFromUrl();
             if (userData.avatar) {
-                document.getElementById('userAvatar').style.backgroundImage = `url(${userData.avatar})`;
+                document.getElementById('userAvatar').style.backgroundImage = url(${userData.avatar});
             } else if (userData.username) {
-                document.getElementById('userAvatar').style.backgroundImage = `url('https://ui-avatars.com/api/?name=${userData.username}&background=random')`;
+                document.getElementById('userAvatar').style.backgroundImage = url('https://ui-avatars.com/api/?name=${userData.username}&background=random');
             }
             document.getElementById('userAvatar').style.backgroundSize = 'cover';
             document.getElementById('userAvatar').style.backgroundPosition = 'center';
@@ -343,7 +314,7 @@ html_template = '''
                     const selectedDate = new Date(date);
                     const selectedMonth = selectedDate.getMonth();
                     const selectedYear = selectedDate.getFullYear();
-                    document.getElementById('monthYear').innerText = `${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear}`;
+                    document.getElementById('monthYear').innerText = ${selectedDate.toLocaleString('en-US', { month: 'long' })} ${selectedYear};
                     document.getElementById('weekDays').innerHTML = '';
                     loadWeekDaysFrom(selectedDate);
                 }
@@ -360,14 +331,14 @@ html_template = '''
             const headerElements = document.querySelectorAll('.month-year, .today-button');
 
             if (tabName === 'calendar') {
-                contentContainer.innerHTML = `{{ calendar_template | safe }}`;
+                contentContainer.innerHTML = {{ calendar_template | safe }};
                 headerElements.forEach(el => el.style.display = 'block');
                 loadWeekDays();
             } else if (tabName === 'games') {
-                contentContainer.innerHTML = `{{ games_template | safe }}`;
+                contentContainer.innerHTML = {{ games_template | safe }};
                 headerElements.forEach(el => el.style.display = 'none');
             } else if (tabName === 'settings') {
-                contentContainer.innerHTML = `{{ settings_template | safe }}`;
+                contentContainer.innerHTML = {{ settings_template | safe }};
                 headerElements.forEach(el => el.style.display = 'none');
             }
         }
@@ -383,7 +354,7 @@ html_template = '''
             while (currentDate <= endDate) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'day';
-                dayElement.innerHTML = `<div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>`;
+                dayElement.innerHTML = <div>${currentDate.getDate()}</div><div>${currentDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}</div>;
                 if (currentDate < today) {
                     dayElement.classList.add('past');
                 }
@@ -420,13 +391,8 @@ html_template = '''
 
         function openEventForm() {
             const contentContainer = document.getElementById('contentContainer');
-            contentContainer.innerHTML = `{{ event_form_template | safe }}`;
+            contentContainer.innerHTML = {{ event_form_template | safe }};
         }
-
-        document.querySelector('.week-days').addEventListener('wheel', function(evt) {
-            evt.preventDefault();
-            this.scrollLeft += evt.deltaY;
-        });
 
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
