@@ -423,6 +423,11 @@ html_template = '''
             contentContainer.innerHTML = `{{ event_form_template | safe }}`;
         }
 
+        document.querySelector('.week-days').addEventListener('wheel', function(evt) {
+            evt.preventDefault();
+            this.scrollLeft += evt.deltaY;
+        });
+
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
         initApp();
