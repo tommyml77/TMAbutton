@@ -13,19 +13,22 @@ user_data = {}
 
 event_form_template = '''
 <div class="event-form">
-    <input type="text" id="eventName" placeholder="Название события">
-    <div class="event-time">
-        <label>Начало</label>
+    <div class="form-group">
+        <label for="eventName">Название события</label>
+        <input type="text" id="eventName" placeholder="Введите название события">
+    </div>
+    <div class="form-group">
+        <label for="eventStartDate">Начало</label>
         <input type="date" id="eventStartDate">
         <input type="time" id="eventStartTime">
     </div>
-    <div class="event-time">
-        <label>Конец</label>
+    <div class="form-group">
+        <label for="eventEndDate">Конец</label>
         <input type="date" id="eventEndDate">
         <input type="time" id="eventEndTime">
     </div>
-    <div class="event-repeat">
-        <label>Повтор</label>
+    <div class="form-group">
+        <label for="eventRepeat">Повтор</label>
         <select id="eventRepeat">
             <option value="none">Не повторять</option>
             <option value="daily">Ежедневно</option>
@@ -33,24 +36,27 @@ event_form_template = '''
             <option value="monthly">Ежемесячно</option>
         </select>
     </div>
-    <div class="event-reminder">
-        <label>Напоминание</label>
+    <div class="form-group">
+        <label for="eventReminder">Напоминание</label>
         <select id="eventReminder">
             <option value="15">За 15 минут</option>
             <option value="30">За 30 минут</option>
             <option value="60">За 60 минут</option>
         </select>
     </div>
-    <div class="event-invite">
-        <label>Приглашение участников</label>
-        <input type="text" id="eventInvite" placeholder="Приглашение участников">
+    <div class="form-group">
+        <label for="eventInvite">Приглашение участников</label>
+        <input type="text" id="eventInvite" placeholder="Введите участников">
     </div>
-    <div class="event-location">
-        <label>Локация или ссылка на звонок</label>
-        <input type="text" id="eventLocation" placeholder="Локация или ссылка на звонок">
+    <div class="form-group">
+        <label for="eventLocation">Локация или ссылка на звонок</label>
+        <input type="text" id="eventLocation" placeholder="Введите локацию или ссылку на звонок">
     </div>
-    <textarea id="eventDescription" placeholder="Описание"></textarea>
-    <button onclick="saveEvent()">Добавить событие</button>
+    <div class="form-group">
+        <label for="eventDescription">Описание</label>
+        <textarea id="eventDescription" placeholder="Введите описание"></textarea>
+    </div>
+    <button class="save-event-button" onclick="saveEvent()">Добавить событие</button>
 </div>
 '''
 
@@ -226,13 +232,36 @@ html_template = '''
             border-left: 1px solid #555;
             margin-left: -1px;
         }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+        }
+        .save-event-button {
+            background-color: #0088cc;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="avatar" id="userAvatar"></div>
-        <div class="month-year" id="monthYear" onclick="openMonthPicker()" style="display: none;">October 2024</div>
-        <button class="today-button" onclick="goToToday()" style="display: none;">🔄</button>
+        <div class="month-year" id="monthYear" onclick="openMonthPicker()">October 2024</div>
+        <button class="today-button" onclick="goToToday()">📅</button>
     </div>
 
     <div id="contentContainer">
